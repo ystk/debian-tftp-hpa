@@ -1,0 +1,21 @@
+tftpd-hpa for Debian
+--------------------
+
+Note that you need to add '--create' to TFTP_OPTIONS in /etc/default/tftpd-hpa
+if you intend to upload files to the tftp server that do not already exist on
+the server.
+
+Instead of manually editing the file, a simple:
+
+  # dpkg-reconfigure -plow tftpd-hpa
+
+let's you configure additional options more conveniently.
+
+
+With Compaq Professional Workstation XP1000 machines acting as clients you might
+need to use "-r blksize" option to inhibit OACK being sent out as they reply to
+regular TFTP port instead of the port where OACK originated. This is SRM
+firmware bug on those machines. Many thanks to Steffen Grunewald for tracking
+this down.
+
+ -- Daniel Baumann <daniel@debian.org>  Sat, 15 Aug 2009 22:34:42 +0200

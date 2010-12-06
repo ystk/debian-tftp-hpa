@@ -1,0 +1,9 @@
+tftp-hpa (5.0-1) unstable; urgency=low
+
+  * As of version 5, tftpd-hpa always runs now always as daemon mode,
+    it is too error prone and messy to support inetd mode.
+
+  * As of version 5, tftpd-hpa uses now /srv/tftp as server root
+    (previously, it was /var/lib/tftpboot).
+
+ -- Daniel Baumann <daniel@debian.org>  Sun, 19 Jul 2009 22:05:33 +0200

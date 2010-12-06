@@ -1,0 +1,45 @@
+Author: Daniel Baumann <daniel@debian.org>
+Description: Adjust default sever root to debian defaults.
+
+diff -Naurp tftp-hpa.orig/README.security tftp-hpa/README.security
+--- tftp-hpa.orig/README.security	2009-08-14 08:55:13.000000000 +0000
++++ tftp-hpa/README.security	2009-08-14 21:29:34.000000000 +0000
+@@ -13,10 +13,10 @@ probably the following:
+ 
+ 1. Create a separate "tftpd" user and group only used for tftpd;
+ 2. Have all your boot files in a single directory tree (usually called 
+-   /tftpboot).
+-3. Specify "-p -u tftpd -s /tftpboot" on the tftpd command line; if
++   /srv/tftp).
++3. Specify "-p -u tftpd -s /srv/tftp" on the tftpd command line; if
+    you want clients to be able to create files use
+-   "-p -c -U 002 -u tftpd -s /tftpboot" (replace 002 with whatever
++   "-p -c -U 002 -u tftpd -s /srv/tftp" (replace 002 with whatever
+    umask is appropriate for your setup.)
+ 
+ 	       =======================================
+@@ -36,12 +36,12 @@ directly.  Thus, if your /etc/inetd.conf
+ line):
+ 
+ tftp	dgram	udp	wait	root	/usr/sbin/tcpd
+-/usr/sbin/in.tftpd -s /tftpboot -r blksize
++/usr/sbin/in.tftpd -s /srv/tftp -r blksize
+ 
+ ... it's better to change to ...
+ 
+ tftp	dgram	udp	wait	root	/usr/sbin/in.tftpd
+-in.tftpd -s /tftpboot -r blksize
++in.tftpd -s /srv/tftp -r blksize
+ 
+ You should make sure that you are using "wait" option in tftpd; you
+ also need to have tftpd spawned as root in order for chroot (-s) to
+diff -Naurp tftp-hpa.orig/tftpd/sample.rules tftp-hpa/tftpd/sample.rules
+--- tftp-hpa.orig/tftpd/sample.rules	2009-08-14 08:55:13.000000000 +0000
++++ tftp-hpa/tftpd/sample.rules	2009-08-14 21:30:36.000000000 +0000
+@@ -29,5 +29,5 @@ rg	\\		/		# Convert backslashes to slash
+ rg	\#		@		# Convert hash marks to @ signs
+ rg	/../		/..no../	# Convert /../ to /..no../
+ e	^ok/				# These are always ok
+-r	^[^/]		/tftpboot/\0	# Convert non-absolute files
++r	^[^/]		/srv/tftp/\0	# Convert non-absolute files
+ a	\.pvt$				# Reject requests for private files

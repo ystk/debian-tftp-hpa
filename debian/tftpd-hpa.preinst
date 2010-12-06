@@ -1,0 +1,80 @@
+#!/bin/sh
+
+set -e
+
+case "${1}" in
+	upgrade)
+		#######################
+		# Partial-Upgrading sid
+
+		# Handling /etc/default/tftpd-hpa (5.0-3 to 5.0-4)
+		if grep -qs ^USERNAME= /etc/default/tftpd-hpa
+		then
+			# configuration was definitely not user changed (#537846).
+			# safe to remove, will be regenerated with debconf
+			rm -f /etc/default/tftpd-hpa
+		fi
+		#######################
+
+		######################
+		# Upgrading from lenny
+
+		# Handling /etc/default/tftpd-hpa
+		if [ -e /etc/default/tftpd-hpa ]
+		then
+			. /etc/default/tftpd-hpa
+
+			# Old configuration file
+			if [ -n "${RUN_DAEMON}" ]
+			then
+				# Check for default configuration from lenny
+				MD5SUM="$(md5sum /etc/default/tftpd-hpa | awk '{ print $1 }')"
+
+				if [ "${MD5SUM}" = "89779f2ccc9861a02a2970cf966c03d4" ] || \
+				   [ "${MD5SUM}" = "bda4569ada8a6cae90544b0a1c0d9238" ]
+				then
+					# safe to overwrite, will be repopulated with debconf later
+					echo "TFTP_OPTIONS=\"--secure\"" > /etc/default/tftpd-hpa
+				else
+					echo "Found old configuration file /etc/default/tftpd-hpa."
+					echo
+					echo "As of version 5.0-1, tftpd-hpa in debian is supported"
+					echo "in standalone mode only."
+					echo
+					echo "Moving /etc/default/tftpd-hpa to /etc/default/tftpd-hpa.old"
+
+					mv /etc/default/tftpd-hpa /etc/default/tftpd-hpa.old
+
+					if grep ^OPTIONS /etc/default/tftpd-hpa.old | grep -q "\-s"
+					then
+						echo "TFTP_OPTIONS=\"--secure\"" > /etc/default/tftpd-hpa
+					fi
+				fi
+			fi
+		fi
+
+		# Handling /etc/inetd.conf
+		if grep -qs "^tftp" /etc/inetd.conf
+		then
+			if [ -x "$(which update-inetd 2>/dev/null)" ]
+			then
+				echo "Disabling tftpd in inetd.conf: tftpd-hpa is now supported running standalone only."
+				update-inetd --disable --pattern tftpd tftp
+			fi
+		fi
+		######################
+		;;
+
+	install|abort-upgrade)
+
+			;;
+
+	*)
+		echo "preinst called with unknown argument \`${1}'" >&2
+		exit 1
+		;;
+esac
+
+#DEBHELPER#
+
+exit 0
