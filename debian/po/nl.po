@@ -1,18 +1,16 @@
-# German translation of tftpd-hpa debconf templates.
-# Copyright (C) 2009 Kai Wasserbäch <debian@carbon-project.org>
-# Copyright (C) 2009 Helge Kreutzmann <debian@helgefjell.de>
-# Copyright (C) 2009-2010 Daniel Baumann <daniel.baumann@progress-technologies.net>
+# Dutch translation of tftpd-hpa debconf templates.
+# Copyright (C) 2012 Jeroen Schot <schot@a-eskwadraat.nl>
 # This file is distributed under the same license as the tftpd-hpa package.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: tftp-hpa 5.0-14\n"
+"Project-Id-Version: tftp-hpa 5.2\n"
 "Report-Msgid-Bugs-To: tftp-hpa@packages.debian.org\n"
 "POT-Creation-Date: 2009-11-10 11:05+0100\n"
-"PO-Revision-Date: 2010-07-20 05:54+0200\n"
-"Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
-"Language-Team: none\n"
-"Language: de\n"
+"PO-Revision-Date: 2012-01-12 14:42+0100\n"
+"Last-Translator: Jeroen Schot <schot@a-eskwadraat.nl>\n"
+"Language-Team: Debian l10n Dutch <debian-l10n-dutch@lists.debian.org>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,7 +19,7 @@ msgstr ""
 #. Description
 #: ../tftpd-hpa.templates:1001
 msgid "Dedicated system account for the tftpd-hpa TFTP daemon:"
-msgstr "Eigenes Systemkonto für den tftpd-hpa TFTP-Daemon:"
+msgstr "Speciaal systeemaccount voor de tftpd-hpa-achtergronddienst:"
 
 #. Type: string
 #. Description
@@ -30,36 +28,34 @@ msgid ""
 "The TFTP server must use a dedicated account for its operation so that the "
 "system's security is not compromised by running it with superuser privileges."
 msgstr ""
-"Der TFTP-Server muss ein eigenes Konto für den Betrieb verwenden, um die "
-"Sicherheit des Systems nicht durch das Betreiben mit Superuser-Rechten zu "
-"kompromittieren."
+"De TFTP-server moet een speciaal account gebruiken voor zijn werkzaamheden, "
+"want als hij met beheerdersrechten wordt uitgevoerd kan dit de beveiliging "
+"van het systeem in gevaar brengen."
 
 #. Type: string
 #. Description
 #: ../tftpd-hpa.templates:1001
 msgid "Please choose that account's username."
-msgstr "Bitte wählen Sie den Benutzernamen dieses Kontos."
+msgstr "Welke gebruikersnaam moet de account krijgen?"
 
 #. Type: string
 #. Description
 #: ../tftpd-hpa.templates:2001
 msgid "TFTP root directory:"
-msgstr "TFTP-Wurzelverzeichnis:"
+msgstr "TFTP-hoofdmap:"
 
 #. Type: string
 #. Description
 #: ../tftpd-hpa.templates:2001
 msgid ""
 "Please specify the directory that will be used as root for the TFTP server."
-msgstr ""
-"Bitte geben Sie das Verzeichnis an, welches als Wurzelverzeichnis für den "
-"TFTP-Server verwendet werden soll."
+msgstr "Welke map moet er worden gebruikt als hoofdmap voor de TFTP-server?"
 
 #. Type: string
 #. Description
 #: ../tftpd-hpa.templates:3001
 msgid "TFTP server address and port:"
-msgstr "TFTP-Serveradresse und -Port:"
+msgstr "Adres en poort voor de TFTP-server:"
 
 #. Type: string
 #. Description
@@ -68,8 +64,8 @@ msgid ""
 "Please specify an address and port to listen to in the form of [address][:"
 "port]."
 msgstr ""
-"Bitte geben Sie eine Adresse und einen Port in der Form [Adresse][:Port] an, "
-"an dem auf Anfragen gewartet werden soll."
+"Op welk adres en poort moet de server luisteren? Voer dit in als [adres][:"
+"poort]."
 
 #. Type: string
 #. Description
@@ -78,9 +74,9 @@ msgid ""
 "By default, the TFTP server listens to port 69 on all addresses and all "
 "interfaces (0.0.0.0:69). If no port is specified, it defaults to 69."
 msgstr ""
-"Standardmässig wartet der TFTP-Server auf Port 69 auf allen Adressen und "
-"allen Schnittstellen (0.0.0.0:69). Ohne Port-Angabe wird die Vorgabe 69 "
-"verwendet."
+"Standaard luistert de TFTP-server op poort 69 van alle adressen en "
+"interfaces (0.0.0.0:69). Als u geen poort opgeeft, zal de standaardwaarde 69 "
+"worden gebruikt."
 
 #. Type: string
 #. Description
@@ -89,15 +85,14 @@ msgid ""
 "Please note that numeric IPv6 addresses must be enclosed in square brackets "
 "to avoid ambiguity with the optional port information."
 msgstr ""
-"Bitte beachten Sie, dass numerische IPv6-Adressen in eckige Klammern "
-"eingeschlossen werden müssen, um Zweideutigkeiten mit der Port-Information "
-"zu vermeiden."
+"Merk op dat numeriek IPv6-adressen tussen vierkante haken moeten worden "
+"geplaatst om verwarring met de optionele poortinformatie te voorkomen."
 
 #. Type: string
 #. Description
 #: ../tftpd-hpa.templates:4001
 msgid "TFTP server additional options:"
-msgstr "Zusätzliche TFTP-Server Optionen:"
+msgstr "Extra opties voor TFTP-server:"
 
 #. Type: string
 #. Description
@@ -107,9 +102,9 @@ msgid ""
 "please consult the tftpd(8) manpage for more information about available "
 "options."
 msgstr ""
-"Dem TFTP-Server kann mit diesem Mechanismus zusätzliche Optionen übergeben "
-"werden. Bitte lesen Sie die Handbuchseite tftpd(8) für weitere Informationen "
-"über verfügbare Optionen."
+"Met dit mechanisme kunnen er extra opties aan de TFTP-server worden "
+"meegegeven. Zie de man-pagina van tftpd(8) voor meer informatie over de "
+"beschikbare opties."
 
 #. Type: string
 #. Description
@@ -118,6 +113,6 @@ msgid ""
 "Options other than the recommended '--secure' are rarely needed and only for "
 "special situations. If unsure, leave it at the recommended default value."
 msgstr ""
-"Andere als die empfohlene Option \"--secure\" werden selten und nur für "
-"besondere Situationen benötigt. Falls Sie sich unsicher sind, belassen Sie "
-"den Vorgabewert."
+"Andere opties dan de aanbevolen '--secure' zijn zelden nodig en alleen voor "
+"speciale omstandigheden. Als u twijfelt, laat dit dan op de aanbevolen "
+"standaard waarde."

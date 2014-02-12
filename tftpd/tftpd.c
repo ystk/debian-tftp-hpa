@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 1983 Regents of the University of California.
+ * Copyright (c) 1999-2009 H. Peter Anvin
+ * Copyright (c) 2011 Intel Corporation; author: H. Peter Anvin
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,18 +115,18 @@ static struct rule *rewrite_rules = NULL;
 int tftp(struct tftphdr *, int);
 static void nak(int, const char *);
 static void timer(int);
-static void do_opt(char *, char *, char **);
+static void do_opt(const char *, const char *, char **);
 
-static int set_blksize(char *, char **);
-static int set_blksize2(char *, char **);
-static int set_tsize(char *, char **);
-static int set_timeout(char *, char **);
-static int set_utimeout(char *, char **);
-static int set_rollover(char *, char **);
+static int set_blksize(uintmax_t *);
+static int set_blksize2(uintmax_t *);
+static int set_tsize(uintmax_t *);
+static int set_timeout(uintmax_t *);
+static int set_utimeout(uintmax_t *);
+static int set_rollover(uintmax_t *);
 
 struct options {
     const char *o_opt;
-    int (*o_fnc) (char *, char **);
+    int (*o_fnc)(uintmax_t *);
 } options[] = {
     {"blksize",  set_blksize},
     {"blksize2", set_blksize2},
@@ -141,6 +143,13 @@ static void handle_sighup(int sig)
 {
     (void)sig;                  /* Suppress unused warning */
     caught_sighup = 1;
+}
+
+/* Handle exit requests by SIGTERM and SIGINT */
+static volatile sig_atomic_t exit_signal = 0;
+static void handle_exit(int sig)
+{
+    exit_signal = sig;
 }
 
 /* Handle timeout signal or timeout event */
@@ -170,6 +179,26 @@ static struct rule *read_remap_rules(const char *file)
     return rulep;
 }
 #endif
+
+/*
+ * Rules for locking files; return 0 on success, -1 on failure
+ */
+static int lock_file(int fd, int lock_write)
+{
+#if defined(HAVE_FCNTL) && defined(HAVE_F_SETLK_DEFINITION)
+  struct flock fl;
+
+  fl.l_type   = lock_write ? F_WRLCK : F_RDLCK;
+  fl.l_whence = SEEK_SET;
+  fl.l_start  = 0;
+  fl.l_len    = 0;		/* Whole file */
+  return fcntl(fd, F_SETLK, &fl);
+#elif defined(HAVE_LOCK_SH_DEFINITION)
+  return flock(fd, lock_write ? LOCK_EX|LOCK_NB : LOCK_SH|LOCK_NB);
+#else
+  return 0;			/* Hope & pray... */
+#endif
+}
 
 static void set_socket_nonblock(int fd, int flag)
 {
@@ -317,9 +346,10 @@ static struct option long_options[] = {
     { "retransmit",  1, NULL, 'T' },
     { "port-range",  1, NULL, 'R' },
     { "map-file",    1, NULL, 'm' },
+    { "pidfile",     1, NULL, 'P' },
     { NULL, 0, NULL, 0 }
 };
-static const char short_options[] = "46cspvVlLa:B:u:U:r:t:T:R:m:";
+static const char short_options[] = "46cspvVlLa:B:u:U:r:t:T:R:m:P:";
 
 int main(int argc, char **argv)
 {
@@ -351,6 +381,7 @@ int main(int argc, char **argv)
 #ifdef WITH_REGEX
     char *rewrite_file = NULL;
 #endif
+    const char *pidfile = NULL;
     u_short tp_opcode;
 
     /* basename() is way too much of a pain from a portability standpoint */
@@ -363,7 +394,7 @@ int main(int argc, char **argv)
     srand(time(NULL) ^ getpid());
 
     while ((c = getopt_long(argc, argv, short_options, long_options, NULL))
-	   != -1)
+           != -1)
         switch (c) {
         case '4':
             ai_fam = AF_INET;
@@ -466,13 +497,16 @@ int main(int argc, char **argv)
         case 'v':
             verbosity++;
             break;
-	case OPT_VERBOSITY:
-	    verbosity = atoi(optarg);
-	    break;
+        case OPT_VERBOSITY:
+            verbosity = atoi(optarg);
+            break;
         case 'V':
             /* Print configuration to stdout and exit */
             printf("%s\n", TFTPD_CONFIG_STR);
             exit(0);
+            break;
+        case 'P':
+            pidfile = optarg;
             break;
         default:
             syslog(LOG_ERR, "Unknown option: '%c'", optopt);
@@ -506,16 +540,19 @@ int main(int argc, char **argv)
         exit(EX_NOUSER);
     }
 
-    if (spec_umask || !unixperms)
-        umask(my_umask);
-
 #ifdef WITH_REGEX
     if (rewrite_file)
         rewrite_rules = read_remap_rules(rewrite_file);
 #endif
 
+    if (pidfile && !standalone) {
+        syslog(LOG_WARNING, "not in standalone mode, ignoring pid file");
+        pidfile = NULL;
+    }
+
     /* If we're running standalone, set up the input port */
     if (standalone) {
+        FILE *pf;
 #ifdef HAVE_IPV6
         if (ai_fam != AF_INET6) {
 #endif
@@ -695,11 +732,25 @@ int main(int argc, char **argv)
         }
 #endif
         /* Daemonize this process */
-        /* Note: when running in secure mode (-s), we must not chroot, since
+        /* Note: when running in secure mode (-s), we must not chdir, since
            we are already in the proper directory. */
         if (!nodaemon && daemon(secure, 0) < 0) {
             syslog(LOG_ERR, "cannot daemonize: %m");
             exit(EX_OSERR);
+        }
+        set_signal(SIGTERM, handle_exit, 0);
+        set_signal(SIGINT,  handle_exit, 0);
+        if (pidfile) {
+            pf = fopen (pidfile, "w");
+            if (!pf) {
+                syslog(LOG_ERR, "cannot open pid file '%s' for writing: %m", pidfile);
+                pidfile = NULL;
+            } else {
+                if (fprintf(pf, "%d\n", getpid()) < 0)
+                    syslog(LOG_ERR, "error writing pid file '%s': %m", pidfile);
+                if (fclose(pf))
+                    syslog(LOG_ERR, "error closing pid file '%s': %m", pidfile);
+            }
         }
         if (fd6 > fd4)
             fdmax = fd6;
@@ -733,10 +784,22 @@ int main(int argc, char **argv)
        lose packets as a result. */
     set_signal(SIGHUP, handle_sighup, 0);
 
+    if (spec_umask || !unixperms)
+        umask(my_umask);
+
     while (1) {
         fd_set readset;
         struct timeval tv_waittime;
         int rv;
+
+        if (exit_signal) { /* happens in standalone mode only */
+            if (pidfile && unlink(pidfile)) {
+                syslog(LOG_WARNING, "error removing pid file '%s': %m", pidfile);
+                exit(EX_OSERR);
+            } else {
+                exit(0);
+            }
+	}
 
         if (caught_sighup) {
             caught_sighup = 0;
@@ -869,6 +932,15 @@ int main(int argc, char **argv)
     /* Ignore SIGHUP */
     set_signal(SIGHUP, SIG_IGN, 0);
 
+    /* Make sure the log socket is still connected.  This has to be
+       done before the chroot, while /dev/log is still accessible.
+       When not running standalone, there is little chance that the
+       syslog daemon gets restarted by the time we get here. */
+    if (secure && standalone) {
+        closelog();
+        openlog(__progname, LOG_PID | LOG_NDELAY, LOG_DAEMON);
+    }
+
 #ifdef HAVE_TCPWRAPPERS
     /* Verify if this was a legal request for us.  This has to be
        done before the chroot, while /etc is still accessible. */
@@ -972,18 +1044,19 @@ int main(int argc, char **argv)
 }
 
 static char *rewrite_access(char *, int, const char **);
-static int validate_access(char *, int, struct formats *, const char **);
-static void tftp_sendfile(struct formats *, struct tftphdr *, int);
-static void tftp_recvfile(struct formats *, struct tftphdr *, int);
+static int validate_access(char *, int, const struct formats *, const char **);
+static void tftp_sendfile(const struct formats *, struct tftphdr *, int);
+static void tftp_recvfile(const struct formats *, struct tftphdr *, int);
 
 struct formats {
     const char *f_mode;
     char *(*f_rewrite) (char *, int, const char **);
-    int (*f_validate) (char *, int, struct formats *, const char **);
-    void (*f_send) (struct formats *, struct tftphdr *, int);
-    void (*f_recv) (struct formats *, struct tftphdr *, int);
+    int (*f_validate) (char *, int, const struct formats *, const char **);
+    void (*f_send) (const struct formats *, struct tftphdr *, int);
+    void (*f_recv) (const struct formats *, struct tftphdr *, int);
     int f_convert;
-} formats[] = {
+};
+static const struct formats formats[] = {
     {
     "netascii", rewrite_access, validate_access, tftp_sendfile,
             tftp_recvfile, 1}, {
@@ -999,7 +1072,7 @@ int tftp(struct tftphdr *tp, int size)
 {
     char *cp, *end;
     int argn, ecode;
-    struct formats *pf = NULL;
+    const struct formats *pf = NULL;
     char *origfilename;
     char *filename, *mode = NULL;
     const char *errmsgptr;
@@ -1103,48 +1176,38 @@ static int blksize_set;
 /*
  * Set a non-standard block size (c.f. RFC2348)
  */
-static int set_blksize(char *val, char **ret)
+static int set_blksize(uintmax_t *vp)
 {
-    static char b_ret[6];
-    unsigned int sz;
-    char *vend;
+    uintmax_t sz = *vp;
 
-    sz = (unsigned int)strtoul(val, &vend, 10);
-
-    if (blksize_set || *vend)
+    if (blksize_set)
         return 0;
 
     if (sz < 8)
-        return (0);
+        return 0;
     else if (sz > max_blksize)
         sz = max_blksize;
 
-    segsize = sz;
-    sprintf(*ret = b_ret, "%u", sz);
-
+    *vp = segsize = sz;
     blksize_set = 1;
-
-    return (1);
+    return 1;
 }
 
 /*
  * Set a power-of-two block size (nonstandard)
  */
-static int set_blksize2(char *val, char **ret)
+static int set_blksize2(uintmax_t *vp)
 {
-    static char b_ret[6];
-    unsigned int sz;
-    char *vend;
+    uintmax_t sz = *vp;
 
-    sz = (unsigned int)strtoul(val, &vend, 10);
-
-    if (blksize_set || *vend)
+    if (blksize_set)
         return 0;
 
     if (sz < 8)
         return (0);
     else if (sz > max_blksize)
         sz = max_blksize;
+    else
 
     /* Convert to a power of two */
     if (sz & (sz - 1)) {
@@ -1155,29 +1218,23 @@ static int set_blksize2(char *val, char **ret)
         sz = sz1;
     }
 
-    segsize = sz;
-    sprintf(*ret = b_ret, "%u", sz);
-
+    *vp = segsize = sz;
     blksize_set = 1;
-
-    return (1);
+    return 1;
 }
 
 /*
  * Set the block number rollover value
  */
-static int set_rollover(char *val, char **ret)
+static int set_rollover(uintmax_t *vp)
 {
-  uintmax_t ro;
-  char *vend;
+    uintmax_t ro = *vp;
+    
+    if (ro > 65535)
+	return 0;
 
-  ro = strtoumax(val, &vend, 10);
-  if (ro > 65535 || *vend)
-    return 0;
-
-  rollover_val = (uint16_t)ro;
-  *ret = val;
-  return 1;
+    rollover_val = (uint16_t)ro;
+    return 1;
 }
 
 /*
@@ -1185,22 +1242,18 @@ static int set_rollover(char *val, char **ret)
  * For netascii mode, we don't know the size ahead of time;
  * so reject the option.
  */
-static int set_tsize(char *val, char **ret)
+static int set_tsize(uintmax_t *vp)
 {
-    static char b_ret[sizeof(uintmax_t) * CHAR_BIT / 3 + 2];
-    uintmax_t sz;
-    char *vend;
+    uintmax_t sz = *vp;
 
-    sz = strtoumax(val, &vend, 10);
-
-    if (!tsize_ok || *vend)
+    if (!tsize_ok)
         return 0;
 
     if (sz == 0)
-        sz = (uintmax_t) tsize;
+        sz = tsize;
 
-    sprintf(*ret = b_ret, "%" PRIuMAX, sz);
-    return (1);
+    *vp = sz;
+    return 1;
 }
 
 /*
@@ -1208,74 +1261,86 @@ static int set_tsize(char *val, char **ret)
  * to be the (default) retransmission timeout, but being an
  * integer in seconds it seems a bit limited.
  */
-static int set_timeout(char *val, char **ret)
+static int set_timeout(uintmax_t *vp)
 {
-    static char b_ret[4];
-    unsigned long to;
-    char *vend;
+    uintmax_t to = *vp;
 
-    to = strtoul(val, &vend, 10);
-
-    if (to < 1 || to > 255 || *vend)
+    if (to < 1 || to > 255)
         return 0;
 
     rexmtval = timeout = to * 1000000UL;
     maxtimeout = rexmtval * TIMEOUT_LIMIT;
 
-    sprintf(*ret = b_ret, "%lu", to);
-    return (1);
+    return 1;
 }
 
 /* Similar, but in microseconds.  We allow down to 10 ms. */
-static int set_utimeout(char *val, char **ret)
+static int set_utimeout(uintmax_t *vp)
 {
-    static char b_ret[4];
-    unsigned long to;
-    char *vend;
+    uintmax_t to = *vp;
 
-    to = strtoul(val, &vend, 10);
-
-    if (to < 10000UL || to > 255000000UL || *vend)
+    if (to < 10000UL || to > 255000000UL)
         return 0;
 
     rexmtval = timeout = to;
     maxtimeout = rexmtval * TIMEOUT_LIMIT;
 
-    sprintf(*ret = b_ret, "%lu", to);
-    return (1);
+    return 1;
 }
 
 /*
- * Parse RFC2347 style options
+ * Conservative calculation for the size of a buffer which can hold an
+ * arbitrary integer
  */
-static void do_opt(char *opt, char *val, char **ap)
+#define OPTBUFSIZE	(sizeof(uintmax_t) * CHAR_BIT / 3 + 3)
+
+/*
+ * Parse RFC2347 style options; we limit the arguments to positive
+ * integers which matches all our current options.
+ */
+static void do_opt(const char *opt, const char *val, char **ap)
 {
     struct options *po;
-    char *ret;
+    char retbuf[OPTBUFSIZE];
+    char *p = *ap;
+    size_t optlen, retlen;
+    char *vend;
+    uintmax_t v;
 
     /* Global option-parsing variables initialization */
     blksize_set = 0;
 
-    if (!*opt)
+    if (!*opt || !*val)
         return;
+
+    errno = 0;
+    v = strtoumax(val, &vend, 10);
+    if (*vend || errno == ERANGE)
+	return;
 
     for (po = options; po->o_opt; po++)
         if (!strcasecmp(po->o_opt, opt)) {
-            if (po->o_fnc(val, &ret)) {
-                if (*ap + strlen(opt) + strlen(ret) + 2 >=
-                    ackbuf + sizeof(ackbuf)) {
+            if (po->o_fnc(&v)) {
+		optlen = strlen(opt);
+		retlen = sprintf(retbuf, "%"PRIuMAX, v);
+
+                if (p + optlen + retlen + 2 >= ackbuf + sizeof(ackbuf)) {
                     nak(EOPTNEG, "Insufficient space for options");
                     exit(0);
                 }
-                *ap = strrchr(strcpy(strrchr(strcpy(*ap, opt), '\0') + 1,
-                                     ret), '\0') + 1;
+		
+		memcpy(p, opt, optlen+1);
+		p += optlen+1;
+		memcpy(p, retbuf, retlen+1);
+		p += retlen+1;
             } else {
                 nak(EOPTNEG, "Unsupported option(s) requested");
                 exit(0);
             }
             break;
         }
-    return;
+
+    *ap = p;
 }
 
 #ifdef WITH_REGEX
@@ -1337,7 +1402,8 @@ static char *rewrite_access(char *filename, int mode, const char **msg)
 {
     if (rewrite_rules) {
         char *newname =
-            rewrite_string(filename, rewrite_rules, mode != RRQ,
+            rewrite_string(filename, rewrite_rules,
+			   mode != RRQ ? 'P' : 'G',
                            rewrite_macros, msg);
         filename = newname;
     }
@@ -1366,7 +1432,7 @@ static FILE *file;
  * given as we have no login directory.
  */
 static int validate_access(char *filename, int mode,
-			   struct formats *pf, const char **errmsg)
+			   const struct formats *pf, const char **errmsg)
 {
     struct stat stbuf;
     int i, len;
@@ -1410,10 +1476,12 @@ static int validate_access(char *filename, int mode,
      * We use different a different permissions scheme if `cancreate' is
      * set.
      */
-    wmode = O_WRONLY |
-        (cancreate ? O_CREAT : 0) |
-        (unixperms ? O_TRUNC : 0) | (pf->f_convert ? O_TEXT : O_BINARY);
+    wmode = O_WRONLY | (cancreate ? O_CREAT : 0) | (pf->f_convert ? O_TEXT : O_BINARY);
     rmode = O_RDONLY | (pf->f_convert ? O_TEXT : O_BINARY);
+
+#ifndef HAVE_FTRUNCATE
+    wmode |= O_TRUNC;		/* This really sucks on a dupe */
+#endif
 
     fd = open(filename, mode == RRQ ? rmode : wmode, 0666);
     if (fd < 0) {
@@ -1433,6 +1501,10 @@ static int validate_access(char *filename, int mode,
     if (fstat(fd, &stbuf) < 0)
         exit(EX_OSERR);         /* This shouldn't happen */
 
+    /* A duplicate RRQ or (worse!) WRQ packet could really cause havoc... */
+    if (lock_file(fd, mode != RRQ))
+	exit(0);
+
     if (mode == RRQ) {
         if (!unixperms && (stbuf.st_mode & (S_IREAD >> 6)) == 0) {
             *errmsg = "File must have global read permissions";
@@ -1447,15 +1519,15 @@ static int validate_access(char *filename, int mode,
                 *errmsg = "File must have global write permissions";
                 return (EACCESS);
             }
-
-            /* We didn't get to truncate the file at open() time */
-#ifdef HAVE_FTRUNCATE
-            if (ftruncate(fd, (off_t) 0)) {
-                *errmsg = "Cannot reset file size";
-                return (EACCESS);
-            }
-#endif
         }
+
+#ifdef HAVE_FTRUNCATE
+	/* We didn't get to truncate the file at open() time */
+	if (ftruncate(fd, (off_t) 0)) {
+	  *errmsg = "Cannot reset file size";
+	  return (EACCESS);
+	}
+#endif
         tsize = 0;
         tsize_ok = 1;
     }
@@ -1474,7 +1546,7 @@ static int validate_access(char *filename, int mode,
 /*
  * Send the requested file.
  */
-static void tftp_sendfile(struct formats *pf, struct tftphdr *oap, int oacklen)
+static void tftp_sendfile(const struct formats *pf, struct tftphdr *oap, int oacklen)
 {
     struct tftphdr *dp;
     struct tftphdr *ap;         /* ack packet */
@@ -1572,7 +1644,7 @@ static void tftp_sendfile(struct formats *pf, struct tftphdr *oap, int oacklen)
 /*
  * Receive a file.
  */
-static void tftp_recvfile(struct formats *pf, struct tftphdr *oap, int oacklen)
+static void tftp_recvfile(const struct formats *pf, struct tftphdr *oap, int oacklen)
 {
     struct tftphdr *dp;
     int n, size;
@@ -1595,6 +1667,10 @@ static void tftp_recvfile(struct formats *pf, struct tftphdr *oap, int oacklen)
             ap->th_opcode = htons((u_short) ACK);
             ap->th_block = htons((u_short) block);
             acksize = 4;
+            /* If we're sending a regular ACK, that means we have successfully
+             * sent the OACK. Clear oap so that we won't try to send another
+             * OACK when the block number wraps back to 0. */
+            oap = NULL;
         }
         if (!++block)
 	  block = rollover_val;

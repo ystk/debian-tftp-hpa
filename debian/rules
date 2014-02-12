@@ -1,24 +1,19 @@
 #!/usr/bin/make -f
 
 %:
-	dh --with quilt ${@}
-
-override_dh_auto_clean:
-	dh_auto_clean
-
-	rm -f config.guess config.sub
+	dh ${@} --with autotools_dev
 
 override_dh_auto_configure:
-	cp -f /usr/share/misc/config.guess .
-	cp -f /usr/share/misc/config.sub .
-
 	dh_auto_configure -- --without-readline
 
 override_dh_auto_install:
-	$(MAKE) INSTALLROOT=$(CURDIR)/debian/tmp install
+	dh_auto_install -- INSTALLROOT=$(CURDIR)/debian/tmp
 
 override_dh_install:
 	dh_install --fail-missing --sourcedir=debian/tmp
 
 override_dh_installinit:
 	dh_installinit -a -- start 20 2 3 4 5 . stop 20 1 .
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz -z9

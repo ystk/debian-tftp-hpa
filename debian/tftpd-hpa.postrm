@@ -10,17 +10,20 @@ case "${1}" in
 		fi
 
 		TFTP_USERNAME="${TFTP_USERNAME:-tftp}"
-		TFTP_DIRECTORY="${TFTP_USERNAME:-/srv/tftp}"
+		TFTP_DIRECTORY="${TFTP_DIRECTORY:-/srv/tftp}"
 
 		if [ -x /usr/sbin/deluser ]
 		then
 			deluser --quiet --system ${TFTP_USERNAME}
 		fi
 
-		if [ -d ${TFTP_DIRECTORY} ]
-		then
-			rmdir --ignore-fail-on-non-empty ${TFTP_DIRECTORY} || true
-		fi
+		for _DIRECTORY in ${TFTP_DIRECTORY}
+		do
+			if [ -d ${_DIRECTORY} ]
+			then
+				rmdir --ignore-fail-on-non-empty ${TFTP_DIRECTORY} > /dev/null 2>&1 || true
+			fi
+		done
 		;;
 
 	purge)

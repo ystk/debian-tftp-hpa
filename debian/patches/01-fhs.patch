@@ -1,4 +1,4 @@
-Author: Daniel Baumann <daniel@debian.org>
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
 Description: Adjust default sever root to debian defaults.
 
 diff -Naurp tftp-hpa.orig/README.security tftp-hpa/README.security

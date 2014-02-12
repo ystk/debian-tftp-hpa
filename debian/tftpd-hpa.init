@@ -33,11 +33,26 @@ set -e
 
 do_start()
 {
-	if [ ! -d "${TFTP_DIRECTORY}" ]
+	# Ensure --secure and multiple server directories are not used at the
+	# same time
+	if [ "$(echo ${TFTP_DIRECTORY} | wc -w)" -ge 2 ] && \
+	   echo ${TFTP_OPTIONS} | grep -qs secure
 	then
-		echo "${TFTP_DIRECTORY} missing, aborting."
+		echo
+		echo "When --secure is specified, exactly one directory can be specified."
+		echo "Please correct your /etc/default/tftpd-hpa."
 		exit 1
 	fi
+
+	# Ensure server directories are existing
+	for _DIRECTORY in ${TFTP_DIRECTORY}
+	do
+		if [ ! -d "${_DIRECTORY}" ]
+		then
+			echo "${_DIRECTORY} missing, aborting."
+			exit 1
+		fi
+	done
 
 	start-stop-daemon --start --quiet --oknodo --exec ${DAEMON} -- \
 		--listen  --user ${TFTP_USERNAME} --address ${TFTP_ADDRESS} \

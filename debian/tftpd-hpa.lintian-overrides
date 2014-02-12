@@ -1,2 +1,1 @@
-# stop is not needed here
-tftpd-hpa: init.d-script-possible-missing-stop /etc/init.d/tftpd-hpa 0 6
+tftpd-hpa: init.d-script-possible-missing-stop etc/init.d/tftpd-hpa 0 6

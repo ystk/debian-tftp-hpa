@@ -1,15 +1,11 @@
 Source: tftp-hpa
 Section: net
 Priority: extra
-Maintainer: Debian Syslinux Maintainers <syslinux@lists.debian-maintainers.org>
-Uploaders:
- Daniel Baumann <daniel@debian.org>, Otavio Salvador <otavio@debian.org>
-Build-Depends:
- debhelper (>= 7.0.50~), autotools-dev, libwrap0-dev, quilt (>= 0.46-7)
-Standards-Version: 3.9.1
+Maintainer: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Uploaders: Otavio Salvador <otavio@debian.org>
+Build-Depends: debhelper (>= 9), autotools-dev, autoconf, libwrap0-dev
+Standards-Version: 3.9.3
 Homepage: http://www.kernel.org/pub/software/network/tftp/
-Vcs-Browser: http://git.debian-maintainers.org/?p=syslinux/tftp-hpa.git
-Vcs-Git: git://git.debian-maintainers.org/git/syslinux/tftp-hpa.git
 
 Package: tftp-hpa
 Architecture: any

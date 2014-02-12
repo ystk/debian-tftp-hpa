@@ -1,11 +1,11 @@
 Summary: The client for the Trivial File Transfer Protocol (TFTP).
 Name: tftp
-Version: 5.0
+Version: 5.2
 Release: 1
 License: BSD
 Group: Applications/Internet
 Source0: http://www.kernel.org/pub/software/network/tftp/tftp-hpa-%{version}.tar.gz
-BuildPreReq: tcp_wrappers
+BuildRequires: tcp_wrappers-devel
 BuildRoot: %{_tmppath}/%{name}-root
 
 %description

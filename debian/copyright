@@ -1,16 +1,22 @@
-Upstream-Contact: Syslinux project <syslinux@zytor.com>
-Upstream-Homepage: http://www.kernel.org/pub/software/network/tftp/
-Maintainer-Contact: Debian Syslinux Maintainers <syslinux@lists.debian-maintainers.org>
-Maintainer-Homepage: http://syslinux.debian-maintainers.org/
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: tftp-hpa
+Upstream-Contact: syslinux@zytor.com
+Source: http://www.kernel.org/pub/software/network/tftp/
 
 Files: *
-Copyright:
- (C) 1984-1994 The Regents of the University of California
- (C) 2000-2009 H. Peter Anvin <hpa@zytor.com>
+Copyright: 1984-1994 The Regents of the University of California
+           2000-2012 H. Peter Anvin <hpa@zytor.com>
+License: BSD
+
+Files: debian/*
+Copyright: 2009-2012 Daniel Baumann <daniel.baumann@progress-technologies.net>
+License: BSD
+
 License: BSD
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
+ .
  1. Redistributions of source code must retain the above copyright
     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright

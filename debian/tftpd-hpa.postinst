@@ -8,8 +8,6 @@ CONFFILE="/etc/default/tftpd-hpa"
 
 case "${1}" in
 	configure)
-		db_version 2.0
-
 		db_get tftpd-hpa/username
 		TFTP_USERNAME="${RET:-tftp}"
 
@@ -66,21 +64,24 @@ EOF
 
 		mv -f "${CONFFILE}.tmp" "${CONFFILE}"
 
-		if ! getent passwd | grep -q "^${TFTP_USERNAME}:"
+		if ! getent passwd "${TFTP_USERNAME}" > /dev/null 2>&1
 		then
-			adduser --system --home ${TFTP_DIRECTORY} --no-create-home --quiet --gecos 'tftp daemon' --group ${TFTP_USERNAME}
+			adduser --system --home $(echo ${TFTP_DIRECTORY} | awk '{ print $1 }') --no-create-home --quiet --gecos 'tftp daemon' --group ${TFTP_USERNAME}
 		else
 			echo "tftpd user (${TFTP_USERNAME}) already exists, doing nothing."
 		fi
 
-		if [ ! -d "${TFTP_DIRECTORY}" ]
-		then
-			mkdir -p "${TFTP_DIRECTORY}"
-			chown root:nogroup ${TFTP_DIRECTORY} -R
-		else
-			echo
-			echo "tftpd-hpa directory (${TFTP_DIRECTORY}) already exists, doing nothing."
-		fi
+		for _DIRECTORY in ${TFTP_DIRECTORY}
+		do
+			if [ ! -d "${_DIRECTORY}" ]
+			then
+				mkdir -p "${_DIRECTORY}"
+				chown root:nogroup ${_DIRECTORY} -R
+			else
+				echo
+				echo "tftpd-hpa directory (${_DIRECTORY}) already exists, doing nothing."
+			fi
+		done
 		;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)
