@@ -21,6 +21,9 @@
 /* Define to 1 if you have the `ftruncate' function. */
 #undef HAVE_FTRUNCATE
 
+/* Define if fcntl.h defines F_SETLK */
+#undef HAVE_F_SETLK_DEFINITION
+
 /* Define if getaddrinfo function was found */
 #undef HAVE_GETADDRINFO
 
@@ -53,6 +56,12 @@
 
 /* Define to 1 if you have the `wrap' library (-lwrap). */
 #undef HAVE_LIBWRAP
+
+/* Define if sys/file.h defines LOCK_EX */
+#undef HAVE_LOCK_EX_DEFINITION
+
+/* Define if sys/file.h defines LOCK_SH */
+#undef HAVE_LOCK_SH_DEFINITION
 
 /* Define to 1 if the system has the type `long long'. */
 #undef HAVE_LONG_LONG
@@ -141,6 +150,9 @@
 /* Define to 1 if you have the <sysexits.h> header file. */
 #undef HAVE_SYSEXITS_H
 
+/* Define to 1 if you have the <sys/file.h> header file. */
+#undef HAVE_SYS_FILE_H
+
 /* Define to 1 if you have the <sys/filio.h> header file. */
 #undef HAVE_SYS_FILIO_H
 
@@ -203,6 +215,9 @@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION

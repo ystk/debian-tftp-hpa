@@ -1,3 +1,22 @@
+Changes in 5.2:
+	Fix breakage on newer Linux when a single interface has
+	multiple IP addresses.
+
+
+Changes in 5.1:
+	Add -P option to write a PID file.  Patch by Ferenc Wagner.
+
+	Bounce the syslog socket in standalone mode, in case the
+	syslog daemon has been restarted.  Patch by Ferenc Wagner.
+
+	Build fixes.
+
+	Fix handling of block number wraparound after a successful
+	options negotiation.
+
+	Fix a buffer overflow in option parsing.
+
+
 Changes in 5.0:
 	Try to on platforms with getaddrinfo() without AI_ADDRCONFIG or
 	AI_CANONNAME.

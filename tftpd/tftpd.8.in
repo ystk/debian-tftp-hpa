@@ -3,7 +3,7 @@
 .\" Copyright (c) 1990, 1993, 1994
 .\"     The Regents of the University of California.  All rights reserved.
 .\"
-.\" Copyright 2001-2008 H. Peter Anvin - All Rights Reserved
+.\" Copyright 2001-2009 H. Peter Anvin - All Rights Reserved
 .\"
 .\" Redistribution and use in source and binary forms, with or without
 .\" modification, are permitted provided that the following conditions
@@ -30,10 +30,10 @@
 .\" SUCH DAMAGE.
 .\"
 .\"----------------------------------------------------------------------- */
-.TH TFTPD 8 "30 July 2008" "tftp-hpa @@VERSION@@" "System Manager's Manual"
+.TH TFTPD 8 "14 September 2009" "tftp-hpa @@VERSION@@" "System Manager's Manual"
 .SH NAME
 .B tftpd
-\- IPv4 Trivial File Transfer Protocol server
+\- Trivial File Transfer Protocol server
 .SH SYNOPSIS
 .B in.tftpd
 .RI [ options... ]
@@ -132,6 +132,11 @@ Perform no additional permissions checks above the normal
 system-provided access controls for the user specified via the
 .B \-\-user
 option.
+.TP
+\fB\-\-pidfile\fP \fIpidfile\fP, \fB\-P\fP \fIpidfile\fP
+When run in standalone mode, write the process ID of the listening
+server into \fIpidfile\fP.  On normal termination (SIGTERM or SIGINT)
+the pid file is automatically removed.
 .TP
 \fB\-\-timeout\fP \fItimeout\fP, \fB\-t\fP \fItimeout\fP
 When run from
