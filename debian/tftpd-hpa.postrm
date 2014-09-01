@@ -2,28 +2,20 @@
 
 set -e
 
-case "${1}" in
+case "$1" in
 	remove)
 		if [ -e /etc/default/tftpd-hpa ]
 		then
-			. /etc/default/tftpd-hpa
-		fi
+		    . /etc/default/tftpd-hpa
 
-		TFTP_USERNAME="${TFTP_USERNAME:-tftp}"
-		TFTP_DIRECTORY="${TFTP_DIRECTORY:-/srv/tftp}"
-
-		if [ -x /usr/sbin/deluser ]
-		then
-			deluser --quiet --system ${TFTP_USERNAME}
-		fi
-
-		for _DIRECTORY in ${TFTP_DIRECTORY}
-		do
-			if [ -d ${_DIRECTORY} ]
+		    for d in $TFTP_DIRECTORY
+		    do
+			if [ -d "$d" ]
 			then
-				rmdir --ignore-fail-on-non-empty ${TFTP_DIRECTORY} > /dev/null 2>&1 || true
+			    rmdir --ignore-fail-on-non-empty "$d" > /dev/null 2>&1 || true
 			fi
-		done
+		    done
+		fi
 		;;
 
 	purge)
@@ -35,7 +27,7 @@ case "${1}" in
 		;;
 
 	*)
-		echo "postrm called with unknown argument \`${1}'" >&2
+		echo "postrm called with unknown argument \`$1'" >&2
 		exit 1
 		;;
 esac

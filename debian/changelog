@@ -1,8 +1,153 @@
+tftp-hpa (5.2+20140608-3) unstable; urgency=medium
+
+  * Fix the Vcs- links to alioth.
+
+ -- Ron Lee <ron@debian.org>  Thu, 31 Jul 2014 15:45:11 +0930
+
+tftp-hpa (5.2+20140608-2) unstable; urgency=medium
+
+  * Fix the upstream makefile to actually be safe for parallel builds.
+
+ -- Ron Lee <ron@debian.org>  Thu, 31 Jul 2014 04:02:27 +0930
+
+tftp-hpa (5.2+20140608-1) unstable; urgency=medium
+
+  * Better handling of IPv4/6 mapping.
+  * Fix the broken postrm.
+    Don't remove users, especially not without checking what they still own.
+    Actually remove the empty directories that we loop over, and not just by
+    accident.  Though we could probably also just kill the loop instead.
+    Definitely don't remove users and directories using arbitrary hardcoded
+    defaults that something other than this package might own.  If we can't
+    determine how they were configured by the local admin, then we have no
+    business just picking things out of a hat to delete anyway.
+  * Adopted, Closes: #756093
+
+ -- Ron Lee <ron@debian.org>  Wed, 30 Jul 2014 12:08:50 +0930
+
+tftp-hpa (5.2-20) unstable; urgency=low
+
+  * I don't care anymore, not worth it.. orphaning.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 25 Jul 2014 20:57:28 +0200
+
+tftp-hpa (5.2-19) unstable; urgency=low
+
+  * Introducing initial support for upstart as wished by Steve Langasek
+    <vorlon@debian.org> in #746715.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 04 May 2014 15:16:55 +0200
+
+tftp-hpa (5.2-18) unstable; urgency=low
+
+  * Updating year in copyright file.
+  * Building with dh --parallel.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 31 Mar 2014 21:31:43 +0200
+
+tftp-hpa (5.2-17) experimental; urgency=low
+
+  * Removing upstart hacks, they are ugly and upstart is dead now.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 18 Feb 2014 08:04:33 +0100
+
+tftp-hpa (5.2-16) experimental; urgency=low
+
+  * Updating copyright file.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 01 Feb 2014 05:36:00 +0100
+
+tftp-hpa (5.2-15) experimental; urgency=low
+
+  * Updating vcs fields.
+  * Adding debug package.
+  * Updating to standards version 3.9.5.
+  * Updating lsb descriptions in initscript (Closes: #736742).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 26 Jan 2014 19:07:46 +0100
+
+tftp-hpa (5.2-14) experimental; urgency=low
+
+  * Correcting typo in atftpd confilicts/replaces (Closes: #717985).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 29 Jul 2013 11:17:21 +0200
+
+tftp-hpa (5.2-13) experimental; urgency=low
+
+  * Adding vcs fields.
+  * Wrapping control fields.
+  * Updating syslinux suggests.
+  * Adding tftp-server virtual packaging handling.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 17 Jul 2013 14:07:42 +0200
+
+tftp-hpa (5.2-12) experimental; urgency=low
+
+  * Dropping obsolete sysvinit initscript start/stop numbers.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 11 Jun 2013 17:55:20 +0200
+
+tftp-hpa (5.2-11) experimental; urgency=low
+
+  * Building tftp-hpa on linux and kfreebsd architectures only.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 06 Jun 2013 08:20:27 +0200
+
+tftp-hpa (5.2-10) experimental; urgency=low
+
+  * Correcting provides in lsb header of initscript.
+  * Adding patch from Kees Cook <kees@ubuntu.com> to fix FORTIFY-detected
+    potential memory corruption.
+  * Building with dh-autoreconf.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 05 Jun 2013 13:58:57 +0200
+
+tftp-hpa (5.2-9) experimental; urgency=low
+
+  * Adding upstart exit codes in initscript.
+  * Adding slightly modified upstart script from Steve Langasek
+    <steve.langasek@canonical.com> (Closes: #708851).
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 03 Jun 2013 06:50:31 +0200
+
+tftp-hpa (5.2-8) experimental; urgency=low
+
+  * Adding Slovak debconf translations from Slavko <slavko@slavino.sk>
+    (Closes: #704163).
+  * Updating year in copyright file.
+  * Trimming diff headers in patches.
+  * Prefixing patches with four digits.
+  * Dropping dpkg-source compression levels.
+  * Sorting targets in rules.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 31 Mar 2013 16:54:07 +0200
+
+tftp-hpa (5.2-7) unstable; urgency=low
+
+  * Removing all references to my old email address.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 10 Mar 2013 22:00:52 +0100
+
+tftp-hpa (5.2-6) unstable; urgency=low
+
+  * Removing Otavio from uploaders with his consent.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 10 Mar 2013 21:52:27 +0100
+
+tftp-hpa (5.2-5) unstable; urgency=low
+
+  * Correcting spelling typo in readme, thanks to Adam D. Barratt <adam
+    @adam-barratt.org.uk>.
+  * Updating to standards version 3.9.4.
+  * Adding dpkg-source local options.
+
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 16 Dec 2012 10:46:51 +0100
+
 tftp-hpa (5.2-4) unstable; urgency=low
 
   * Adding note to readme about ipv6 kernel support (Closes: #544089).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Thu, 19 Jul 2012 16:33:37 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 19 Jul 2012 16:33:37 +0200
 
 tftp-hpa (5.2-3) unstable; urgency=low
 
@@ -10,7 +155,7 @@ tftp-hpa (5.2-3) unstable; urgency=low
   * Trimming lintian overrides.
   * Switching to xz compression.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sat, 30 Jun 2012 14:45:15 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 30 Jun 2012 14:45:15 +0200
 
 tftp-hpa (5.2-2) unstable; urgency=low
 
@@ -20,7 +165,7 @@ tftp-hpa (5.2-2) unstable; urgency=low
   * Updating to standards version 3.9.3.
   * Updating copyright file machine-readable format version 1.0.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 14 Mar 2012 07:59:35 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 14 Mar 2012 07:59:35 +0100
 
 tftp-hpa (5.2-1) unstable; urgency=low
 
@@ -28,14 +173,14 @@ tftp-hpa (5.2-1) unstable; urgency=low
   * Removing obsolete db_version call in tftpd-hpa postinst script.
   * Merging upstream version 5.2.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 23 Dec 2011 15:10:17 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 23 Dec 2011 15:10:17 +0100
 
 tftp-hpa (5.1-3) unstable; urgency=low
 
   * Adding Brazilian Portuguese debconf translations from Flamarion
     Jorge <jorge.flamarion@gmail.com> (Closes: #640801).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 28 Sep 2011 13:52:46 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 28 Sep 2011 13:52:46 +0200
 
 tftp-hpa (5.1-2) unstable; urgency=low
 
@@ -43,7 +188,7 @@ tftp-hpa (5.1-2) unstable; urgency=low
     variable used in tftpd-hpa postrm that lead to not removing the tftp
     server directory on purge (Closes: #636152).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 07 Aug 2011 16:43:58 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 07 Aug 2011 16:43:58 +0200
 
 tftp-hpa (5.1-1) unstable; urgency=low
 
@@ -54,7 +199,7 @@ tftp-hpa (5.1-1) unstable; urgency=low
   * Updating copyright file.
   * Updating lintian overrides.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 10 Jul 2011 17:18:58 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 10 Jul 2011 17:18:58 +0200
 
 tftp-hpa (5.0-22) unstable; urgency=low
 
@@ -64,7 +209,7 @@ tftp-hpa (5.0-22) unstable; urgency=low
   * Adding check in tftpd-hpa.init to ensure that --secure and multiple
     server directories are not used at the same time.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 20 Feb 2011 00:18:01 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 20 Feb 2011 00:18:01 +0100
 
 tftp-hpa (5.0-21) unstable; urgency=low
 
@@ -75,14 +220,14 @@ tftp-hpa (5.0-21) unstable; urgency=low
   * Removing lenny legacy stuff.
   * Adding autoconf to build-depends.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 06 Feb 2011 11:05:46 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 06 Feb 2011 11:05:46 +0100
 
 tftp-hpa (5.0-20) experimental; urgency=low
 
   * Update manpage to match source code regarding mapfile parameter,
     thanks to Jim Paris <jim@jtan.com> (Closes: #606267).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 24 Dec 2010 17:42:08 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 24 Dec 2010 17:42:08 +0100
 
 tftp-hpa (5.0-19) experimental; urgency=low
 
@@ -91,13 +236,13 @@ tftp-hpa (5.0-19) experimental; urgency=low
   * Updating to debhelper version 8.
   * Simplyfing autotools handing in rules.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 19 Dec 2010 21:02:26 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 19 Dec 2010 21:02:26 +0100
 
 tftp-hpa (5.0-18) unstable; urgency=medium
 
   * Making greps for tftp username in postinst more robust.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 06 Dec 2010 23:40:45 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 06 Dec 2010 23:40:45 +0100
 
 tftp-hpa (5.0-17) experimental; urgency=low
 
@@ -105,14 +250,14 @@ tftp-hpa (5.0-17) experimental; urgency=low
   * Adding Danish debconf translations from Joe Hansen
     <joedalton2@yahoo.dk> (Closes: #598042).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sat, 25 Sep 2010 22:38:41 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 25 Sep 2010 22:38:41 +0200
 
 tftp-hpa (5.0-16) unstable; urgency=low
 
   * Adding updated debconf translations from Vincenzo Campanella
     <vinz65@gmail.com> (Closes: #597314).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 19 Sep 2010 12:45:25 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 19 Sep 2010 12:45:25 +0200
 
 tftp-hpa (5.0-15) unstable; urgency=low
 
@@ -122,7 +267,7 @@ tftp-hpa (5.0-15) unstable; urgency=low
   * Adding updated Spanish debconf translations from Omar Campagne
     <ocampagne@gmail.com> (Closes: #590664).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Thu, 05 Aug 2010 17:13:47 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 05 Aug 2010 17:13:47 +0200
 
 tftp-hpa (5.0-14) unstable; urgency=medium
 
@@ -131,7 +276,7 @@ tftp-hpa (5.0-14) unstable; urgency=medium
     syslog (Closes: #541184).
   * Rediffing progname.patch.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sat, 10 Jul 2010 18:16:58 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 10 Jul 2010 18:16:58 +0200
 
 tftp-hpa (5.0-13) unstable; urgency=low
 
@@ -140,7 +285,7 @@ tftp-hpa (5.0-13) unstable; urgency=low
   * Adding updated Japanese debconf translations from Hideki Yamane
     <henrich@debian.or.jp> (Closes: #580158).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Thu, 13 May 2010 19:09:44 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Thu, 13 May 2010 19:09:44 +0200
 
 tftp-hpa (5.0-12) unstable; urgency=low
 
@@ -153,7 +298,7 @@ tftp-hpa (5.0-12) unstable; urgency=low
   * Taking over default argument -s when updating configuration from
     lenny to squeeze (Closes: #569633).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 07 Apr 2010 09:59:35 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 07 Apr 2010 09:59:35 +0200
 
 tftp-hpa (5.0-11) unstable; urgency=medium
 
@@ -164,7 +309,7 @@ tftp-hpa (5.0-11) unstable; urgency=medium
   * Applying patch from Thorsten Glaser <tg@mirbsd.de> to fix FTBFS on
     mips/mipsel (Closes: #564052).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 22 Jan 2010 21:05:54 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 22 Jan 2010 21:05:54 +0100
 
 tftp-hpa (5.0-10) unstable; urgency=low
 
@@ -173,7 +318,7 @@ tftp-hpa (5.0-10) unstable; urgency=low
     boxes of debian are down at the moment) and setting explicit
     LDFLAGS.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 16 Dec 2009 17:40:33 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 16 Dec 2009 17:40:33 +0100
 
 tftp-hpa (5.0-9) unstable; urgency=low
 
@@ -182,7 +327,7 @@ tftp-hpa (5.0-9) unstable; urgency=low
   * Adding updated Portuguese debconf translations from Americo Monteiro
     <a_monteiro@netcabo.pt> (Closes: #557007).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 22 Nov 2009 17:29:06 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 22 Nov 2009 17:29:06 +0100
 
 tftp-hpa (5.0-8) unstable; urgency=low
 
@@ -196,7 +341,7 @@ tftp-hpa (5.0-8) unstable; urgency=low
     prompted for the directory on upgrades from lenny), the tftpd
     directory gets now more visibility (Closes: #551828).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Tue, 10 Nov 2009 11:26:02 +0100
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 10 Nov 2009 11:26:02 +0100
 
 tftp-hpa (5.0-7) unstable; urgency=low
 
@@ -211,7 +356,7 @@ tftp-hpa (5.0-7) unstable; urgency=low
     <dlist@bluewin.ch> (Closes: #552068).
   * Replacing some Germanisms from the German debconf translations.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 23 Oct 2009 08:43:37 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 23 Oct 2009 08:43:37 +0200
 
 tftp-hpa (5.0-6) unstable; urgency=low
 
@@ -238,13 +383,13 @@ tftp-hpa (5.0-6) unstable; urgency=low
   * Adding updated Japanese debconf translations from Hideki Yamane
     <henrich@debian.or.jp> (Closes: #545407).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 21 Sep 2009 21:20:57 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 21 Sep 2009 21:20:57 +0200
 
 tftp-hpa (5.0-5) unstable; urgency=low
 
   * Adding missing build-depends to autotools-dev (Closes: #541550).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 14 Aug 2009 21:12:27 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 14 Aug 2009 21:12:27 +0200
 
 tftp-hpa (5.0-4) unstable; urgency=low
 
@@ -262,7 +407,7 @@ tftp-hpa (5.0-4) unstable; urgency=low
   * Handling partial upgrades from 5.0-3 (sid).
   * Adding Otavio to uploaders.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 14 Aug 2009 19:33:38 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Fri, 14 Aug 2009 19:33:38 +0200
 
 tftp-hpa (5.0-3) unstable; urgency=low
 
@@ -271,14 +416,14 @@ tftp-hpa (5.0-3) unstable; urgency=low
   * Using long options when calling tftpd-hpa in initscript.
   * Adding missing equal sign in defaults file (Closes: #537712).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Tue, 21 Jul 2009 16:23:33 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Tue, 21 Jul 2009 16:23:33 +0200
 
 tftp-hpa (5.0-2) unstable; urgency=low
 
   * Adding forgotten bug numbers to previous changelog entry.
   * Now running always as unprivileged user (Closes: #245017).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 20 Jul 2009 01:27:27 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Mon, 20 Jul 2009 01:27:27 +0200
 
 tftp-hpa (5.0-1) unstable; urgency=low
 
@@ -312,14 +457,14 @@ tftp-hpa (5.0-1) unstable; urgency=low
   * Updating readme to reflect changes about the initscript.
   * Adding example preseed file.
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 19 Jul 2009 23:48:12 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sun, 19 Jul 2009 23:48:12 +0200
 
 tftp-hpa (0.49-1.1) unstable; urgency=low
 
   * Non-maintainer upload.
   * Conditionally calling update-inetd in tftpd-hpa.postinst (Closes: #522780).
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 08 Jul 2009 14:50:00 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Wed, 08 Jul 2009 14:50:00 +0200
 
 tftp-hpa (0.49-1) unstable; urgency=low
 

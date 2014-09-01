@@ -19,7 +19,7 @@ firmware bug on those machines. Many thanks to Steffen Grunewald for tracking
 this down.
 
 
-If your're running a kernel configuration that has no IPv6 support (note: all
+If you're running a kernel configuration that has no IPv6 support (note: all
 Debian kernels come with IPv6 support), you need to use the "-4" option,
 otherwise tftpd-hpa refuses to start with:
 
@@ -27,4 +27,4 @@ otherwise tftpd-hpa refuses to start with:
   protocol
   Cannot set nonblock flag on socket: Bad file descriptor
 
- -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sat, 15 Aug 2009 22:34:42 +0200
+ -- Daniel Baumann <mail@daniel-baumann.ch>  Sat, 15 Aug 2009 22:34:42 +0200
